@@ -7,6 +7,8 @@ const Footer = () => (
       <Col className="text-center">
         Created by: Tuan Do, John Gabriel Martinez, Ella Self, Mason Vuong, Peyton Young
         <br />
+        Continued by <a href="https://mtuando.github.io/">Tuan Do</a>.
+        <br />
       </Col>
     </Container>
   </footer>

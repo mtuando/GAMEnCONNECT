@@ -136,6 +136,10 @@ const NavBar: React.FC = () => {
                   </Nav.Link>
                 )}
 
+                <Nav.Link as={Link} href="/events" className={getNavLinkClass('/events')}>
+                  Events
+                </Nav.Link>
+
                 <Nav.Link as={Link} href="/reviews" className={getNavLinkClass('/reviews')}>
                   Reviews
                 </Nav.Link>

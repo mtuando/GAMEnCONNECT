@@ -160,12 +160,27 @@ const Home = () => {
                 </a>
               </Card>
             </Col>
+
+            <Col xs={12} md={6} lg={4}>
+              <Card className="h-100 shadow-sm custom-card-body px-3 py-5 text-center d-flex flex-column">
+                <p>
+                  Check out our upcoming events and tournaments.
+                </p>
+
+                <a
+                  href="/events"
+                  className="btn custom-home-btn border-0 w-50 mx-auto mt-auto"
+                >
+                  View
+                </a>
+              </Card>
+            </Col>
             {session && (
               
             <Col xs={12} md={6} lg={4}>
               <Card className="h-100 shadow-sm custom-card-body px-3 py-5 text-center d-flex flex-column">
                 <p>
-                  Help us foster a supportive gaming community on campus, reports of harrassment or miscoduct.
+                  Help us foster a supportive gaming community on campus, reports of harrassment or misconduct.
                 </p>
 
                 <a
