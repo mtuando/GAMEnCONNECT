@@ -33,6 +33,8 @@ model User {
 
   players     Player[]
   userPlayers UserPlayer[]
+
+  events EventParticipant[]
 }
 
 model Profile {
@@ -171,4 +173,28 @@ model Review {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Event {
+  id              Int                @id @default(autoincrement())
+  title           String
+  description     String             @default("")
+  date            DateTime           @default(now())
+  location        String
+  maxParticipants Int
+  participants    EventParticipant[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model EventParticipant {
+  id       Int      @id @default(autoincrement())
+  eventId  Int
+  userId   Int
+  joinedAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
 }

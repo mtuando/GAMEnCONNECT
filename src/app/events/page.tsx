@@ -1,33 +1,19 @@
-'use client';
+import { prisma } from '@/lib/prisma';
+import EventComponent, { type Event } from '@/components/event/eventClient';
 
-import EventComponent, { Event } from "@/components/event/eventClient";
+export default async function EventsPage() {
+  let events: Event[] = [];
+  
+  try {
+    events = await prisma.event!.findMany({
+      include: {
+        participants: true, // Includes the EventParticipant relation array
+      },
+    }) as Event[];
+  } catch (error) {
+    // Handle build time and connection errors gracefully
+    console.error('Failed to fetch events:', error);
+  }
 
-// TODO (admin): Replace this sample data with events fetched from the database.
-// TODO (admin): Create an admin-only form/API for creating, editing, and deleting events.
-// TODO (admin): Store the event creator, registration deadline, status, and participant list.
-const eventsData: Event[] = [
-	{
-		id: "community-football",
-		title: "Community Football Match",
-		description: "A friendly match for players of all skill levels.",
-		date: "Saturday, June 15 · 10:00 AM",
-		location: "University Sports Field",
-		participants: 12,
-		maxParticipants: 22,
-	},
-	{
-		id: "beginner-badminton",
-		title: "Beginner Badminton Session",
-		description: "Learn the basics and meet other badminton players.",
-		date: "Sunday, June 23 · 2:00 PM",
-		location: "Main Gymnasium",
-		participants: 8,
-		maxParticipants: 16,
-	},
-];
-
-export default function EventsPage({ events }: { events?: Event[] } = {}) {
-    return (
-        <EventComponent events={events || eventsData} />
-    );
+  return <EventComponent events={events} />;
 }

@@ -19,3 +19,9 @@ const adapter = isLocalPostgres
 export const prisma = new PrismaClient({
   adapter,
 });
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

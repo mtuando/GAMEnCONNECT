@@ -5,6 +5,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "bcrypt";
 import * as config from "../config/settings.development.json";
 import games from "./data/games.json";
+import eventsData from "./data/events.json";
 import communityServers from "./data/communityServers.json";
 
 const connectionString = process.env.DATABASE_URL;
@@ -277,6 +278,13 @@ const playerList = [
   },
 ];
 
+const events = eventsData as Array<{
+  title: string;
+  date: string;
+  location: string;
+  maxParticipants: number;
+}>;
+
 const defaultProfiles: Record<
   string,
   {
@@ -483,6 +491,26 @@ async function main() {
     }),
   );
 
+  await Promise.all(
+    events.map(async (event) => {
+      console.log(`  Adding event: ${event.title}`);
+
+      return prisma.event.upsert({
+        where: { title: event.title },
+        update: {
+          date: new Date(event.date),
+          location: event.location,
+          maxParticipants: event.maxParticipants,
+        },
+        create: {
+          title: event.title,
+          date: new Date(event.date),
+          location: event.location,
+          maxParticipants: event.maxParticipants,
+        },
+      });
+    })
+  );
   console.log("Database seeding complete");
 }
 

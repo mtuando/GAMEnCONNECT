@@ -2,20 +2,51 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Table, Button, Row, Col, Container } from "react-bootstrap";
+import { Table, Row, Col, Container } from "react-bootstrap";
+import JoinButton from "./JoinButton";
+import { useRouter } from "next/navigation";
 
 export type Event = {
-	id: string;
+	id: number;
 	title: string;
 	description: string;
-	date: string;
+	date: Date | string;
 	location: string;
-	participants: number;
 	maxParticipants: number;
+    participants?: EventParticipant[];
+};
+
+export type EventParticipant = {
+  id: number;
+  eventId: number;
+  userId: number;
 };
 
 export default function EventComponent({ events }: { events?: Event[] }) {
     const { data: session } = useSession();
+    const router = useRouter();
+
+    const currentUserId = session?.user?.id ? Number(session.user.id) : undefined;
+    const handleJoin = async (eventId: number) => {
+        const res = await fetch(`/api/events/${eventId}/join`, { method: 'POST' });
+        if (!res.ok) {
+            const data = await res.json();
+            alert(data.error || 'Failed to join event');
+            return;
+        }
+        router.refresh();
+    };
+
+    const handleLeave = async (eventId: number) => {
+        const res = await fetch(`/api/events/${eventId}/leave`, { method: 'DELETE' });
+        if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Failed to leave event');
+        return;
+        }
+        router.refresh();
+    };
+
     return (
 		<main className="py-2 mt-4 ms-4 me-4">
 			<section>
@@ -34,9 +65,9 @@ export default function EventComponent({ events }: { events?: Event[] }) {
 					</Link>
 				</div>
 
-				{events === undefined || events.length === 0 ? (
-					nothing()
-				) : (
+				{!events || events.length === 0 ? (
+                    nothing()
+                ): (
 					<div className="grid gap-6 md:grid-cols-2">
 						{
                             <Table striped bordered hover responsive className="mt-4 ml-4 shadow-sm">
@@ -46,24 +77,39 @@ export default function EventComponent({ events }: { events?: Event[] }) {
                                         <th>Date</th>
                                         <th>Location</th>
                                         <th>Participants</th>
+                                        {session && <th>Action</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {events.map((event) => (
-                                        <tr key={event.id}>
+                                        {events.map((event) => {
+                                        const participantList = Array.isArray(event.participants) ? event.participants : [];
+                                        const isJoined = currentUserId
+                                            ? participantList.some((p) => p.userId === currentUserId)
+                                            : false;
+
+                                        return (
+                                            <tr key={event.id}>
                                             <td>{event.title}</td>
-                                            <td>{event.date}</td>
+                                            <td>{new Date(event.date).toLocaleDateString()}</td>
                                             <td>{event.location}</td>
-                                            <td>{event.participants}/{event.maxParticipants}</td>
+                                            <td>
+                                                {participantList.length}/{event.maxParticipants}
+                                            </td>
                                             {session && (
-                                                <td><Button>Join</Button></td>
-                                                // Future 1: Implement Join and Leave functionality for events.
-                                                // Future 2: Implement Waitlists.
+                                                <td>
+                                                <JoinButton
+                                                    eventId={event.id}
+                                                    isJoined={isJoined}
+                                                    onJoin={() => handleJoin(event.id)}
+                                                    onLeave={() => handleLeave(event.id)}
+                                                />
+                                                </td>
                                             )}
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </Table>
+                                            </tr>
+                                        );
+                                        })}
+                                    </tbody>
+                                </Table>
 
                         }
 					</div>
