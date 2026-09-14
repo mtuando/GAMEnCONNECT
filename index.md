@@ -116,8 +116,8 @@ $ npm run dev
 > next dev
 
 ▲ Next.js 16.1.6 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://XXX.XXX.XXX.XXX:3000
+- Local:         http://localhost:2132
+- Network:       http://XXX.XXX.XXX.XXX:2132
 - Environments: .env
 
 ✓ Starting...
@@ -127,7 +127,7 @@ $ npm run dev
 
 ### Viewing the running app
 
-If all goes well, the template application will appear at [http://localhost:3000](http://localhost:3000). You can login using the credentials in [settings.development.json](https://github.com/ics-software-engineering/nextjs-application-template/blob/main/config/settings.development.json), or else register a new account.
+If all goes well, the template application will appear at [http://localhost:2132](http://localhost:2132). You can login using the credentials in [settings.development.json](https://github.com/ics-software-engineering/nextjs-application-template/blob/main/config/settings.development.json), or else register a new account.
 
 
 ### ESLint
@@ -297,7 +297,7 @@ By default, each user only sees the Stuff that they have created. However, the s
 
 #### Landing page
 
-When you retrieve the app at http://localhost:3000, this is what should be displayed:
+When you retrieve the app at http://localhost:2132, this is what should be displayed:
 
 ![](https://github.com/ics-software-engineering/nextjs-application-template/raw/main/doc/landing-page.png)
 

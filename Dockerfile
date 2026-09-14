@@ -14,7 +14,7 @@ ARG DATABASE_URL=
 FROM node:${NODE_VERSION}-alpine as base
 
 # Set working directory for all build stages.
-WORKDIR /usr/src/app
+WORKDIR /app
 
 
 ################################################################################
@@ -68,12 +68,12 @@ COPY package.json .
 
 # Copy the production dependencies from the deps stage and also
 # the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/.next ./.next
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
 
 
 # Expose the port that the application listens on.
-EXPOSE 5024
+EXPOSE 2132
 
 # Run the application.
 CMD npm start

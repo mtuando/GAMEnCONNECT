@@ -32,8 +32,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/playwright_test
       AUTH_SECRET: thisisanauthsecretfortestingonly
-      AUTH_URL: http://localhost:3000
-      PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+      AUTH_URL: http://localhost:2132
+      PLAYWRIGHT_TEST_BASE_URL: http://localhost:2132
       NODE_ENV: test
 
     steps:

@@ -19,14 +19,15 @@ services:
   app:
     build: .
     container_name: gamelink-app
+    user: "root"
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://gamelink_user:[REDACTED]@db:5432/gamelink_db
+      DATABASE_URL: postgresql://gamelink_user:gamelink_password@db:5432/gamelink_db
       NODE_ENV: development
     ports:
-      - "2132:3000"
+      - "2132:2132"
     volumes:
       - .:/app
       - /app/node_modules

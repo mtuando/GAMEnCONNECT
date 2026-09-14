@@ -3,11 +3,12 @@ import { test as base, expect, Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:2132';
 const SESSION_STORAGE_PATH = path.join(__dirname, 'playwright-auth-sessions');
 
 if (!fs.existsSync(SESSION_STORAGE_PATH)) {
@@ -41,7 +42,7 @@ async function authenticateWithUI(
   // 🔁 Try restoring saved session
   if (fs.existsSync(sessionPath)) {
     try {
-      const sessionData = JSON.parse(fs.readFileSync(sessionPath, 'utf8'));
+      const sessionData = JSON.parse(fs.readFileSync(resolve(sessionPath), 'utf8'));
       await page.context().addCookies(sessionData.cookies);
 
       await page.goto(BASE_URL);

@@ -154,9 +154,7 @@ const NavBar: React.FC = () => {
                       Report Player
                     </Nav.Link>
 
-                    <Nav.Link as={Link} href="/profile" id="profile-nav" className={getNavLinkClass('/profile')}>
-                      Profile
-                    </Nav.Link>
+                    
                   </>
                 )}
               </>
@@ -220,6 +218,11 @@ const NavBar: React.FC = () => {
                 <NavDropdown.Item href="/auth/change-password">
                   <Lock className="me-2" />
                   Change Password
+                </NavDropdown.Item>
+
+                <NavDropdown.Item href="/profile" id="profile-nav">
+                  <PersonFill className="me-2" />
+                  Profile
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (

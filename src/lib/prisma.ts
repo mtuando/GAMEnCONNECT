@@ -8,13 +8,11 @@ if (!connectionString) {
   throw new Error('DATABASE_URL is not set');
 }
 
-const isLocalPostgres =
-  connectionString.includes('localhost') ||
-  connectionString.includes('127.0.0.1');
+const isNeon = connectionString.includes('neon.tech');
 
-const adapter = isLocalPostgres
-  ? new PrismaPg({ connectionString })
-  : new PrismaNeon({ connectionString });
+const adapter = isNeon
+  ? new PrismaNeon({ connectionString })
+  : new PrismaPg({ connectionString });
 
 export const prisma = new PrismaClient({
   adapter,

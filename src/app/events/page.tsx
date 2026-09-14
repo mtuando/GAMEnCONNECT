@@ -1,17 +1,21 @@
 import { prisma } from '@/lib/prisma';
 import EventComponent, { type Event } from '@/components/event/eventClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function EventsPage() {
   let events: Event[] = [];
   
   try {
-    events = await prisma.event!.findMany({
+    events = await prisma.event.findMany({
+      orderBy: {
+        date: 'asc',
+      },
       include: {
-        participants: true, // Includes the EventParticipant relation array
+        participants: true,
       },
     }) as Event[];
   } catch (error) {
-    // Handle build time and connection errors gracefully
     console.error('Failed to fetch events:', error);
   }
 

@@ -1,20 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse, NextRequest } from 'next/server';
-import getServerSession from 'next-auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import authOptions from '@/lib/authOptions';
 
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await params;
   const eventId = parseInt(id, 10);
-  const userId = (session as any)?.user?.id;
+  const userId = Number(session.user.id);
 
   try {
     await prisma.eventParticipant.delete({

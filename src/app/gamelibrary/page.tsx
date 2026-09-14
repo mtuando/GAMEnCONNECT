@@ -12,7 +12,11 @@ const GameLibraryPage = async () => {
     redirect('/admin/manage');
   }
 
-  const games = await prisma.game.findMany();
+  const games = await prisma.game.findMany({
+    orderBy: {
+      title: 'asc',
+    },
+  });
 
   return <GameLibraryClient games={games} />;
 };

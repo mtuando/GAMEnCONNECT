@@ -3,10 +3,10 @@ import "dotenv/config";
 import { PrismaClient, Role } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hash } from "bcrypt";
-import * as config from "../config/settings.development.json";
-import games from "./data/games.json";
-import eventsData from "./data/events.json";
-import communityServers from "./data/communityServers.json";
+import * as config from "../config/settings.development.json" with { type: "json" };
+import games from "./data/games.json" with { type: "json" };
+import eventsData from "./data/events.json" with { type: "json" };
+import communityServers from "./data/communityServers.json" with { type: "json" };
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -283,7 +283,7 @@ const events = eventsData as Array<{
   date: string;
   location: string;
   maxParticipants: number;
-}>;
+}> || [];
 
 const defaultProfiles: Record<
   string,
@@ -317,7 +317,7 @@ const defaultProfiles: Record<
 const getUniqueAccounts = () => {
   const accountsByEmail = new Map<string, SeedAccount>();
 
-  const configAccounts = config.defaultAccounts as SeedAccount[];
+  const configAccounts = config.defaultAccounts as SeedAccount[] || [];
 
   configAccounts.forEach((account) => {
     accountsByEmail.set(account.email, {
@@ -467,7 +467,7 @@ async function main() {
   }
 
   await Promise.all(
-    communityServers.map((server) => {
+    communityServers.map( async (server) => {
       console.log(`  Adding community server: ${server.name}`);
 
       return prisma.communityServer.upsert({

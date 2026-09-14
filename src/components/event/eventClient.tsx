@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 export type Event = {
 	id: number;
 	title: string;
-	description: string;
 	date: Date | string;
 	location: string;
 	maxParticipants: number;
@@ -40,9 +39,9 @@ export default function EventComponent({ events }: { events?: Event[] }) {
     const handleLeave = async (eventId: number) => {
         const res = await fetch(`/api/events/${eventId}/leave`, { method: 'DELETE' });
         if (!res.ok) {
-        const data = await res.json();
-        alert(data.error || 'Failed to leave event');
-        return;
+            const data = await res.json();
+            alert(data.error || 'Failed to leave event');
+            return;
         }
         router.refresh();
     };
@@ -82,31 +81,31 @@ export default function EventComponent({ events }: { events?: Event[] }) {
                                 </thead>
                                 <tbody>
                                         {events.map((event) => {
-                                        const participantList = Array.isArray(event.participants) ? event.participants : [];
-                                        const isJoined = currentUserId
-                                            ? participantList.some((p) => p.userId === currentUserId)
-                                            : false;
+                                            const participantList = Array.isArray(event.participants) ? event.participants : [];
+                                            const isJoined = currentUserId
+                                                ? participantList.some((p) => p.userId === currentUserId)
+                                                : false;
 
-                                        return (
-                                            <tr key={event.id}>
-                                            <td>{event.title}</td>
-                                            <td>{new Date(event.date).toLocaleDateString()}</td>
-                                            <td>{event.location}</td>
-                                            <td>
-                                                {participantList.length}/{event.maxParticipants}
-                                            </td>
-                                            {session && (
+                                            return (
+                                                <tr key={event.id}>
+                                                <td>{event.title}</td>
+                                                <td>{new Date(event.date).toLocaleDateString()}</td>
+                                                <td>{event.location}</td>
                                                 <td>
-                                                <JoinButton
-                                                    eventId={event.id}
-                                                    isJoined={isJoined}
-                                                    onJoin={() => handleJoin(event.id)}
-                                                    onLeave={() => handleLeave(event.id)}
-                                                />
+                                                    {participantList.length}/{event.maxParticipants}
                                                 </td>
-                                            )}
-                                            </tr>
-                                        );
+                                                    {session && (
+                                                        <td>
+                                                        <JoinButton
+                                                            eventId={event.id}
+                                                            isJoined={isJoined}
+                                                            onJoin={() => handleJoin(event.id)}
+                                                            onLeave={() => handleLeave(event.id)}
+                                                        />
+                                                    </td>
+                                                )}
+                                                </tr>
+                                            );
                                         })}
                                     </tbody>
                                 </Table>

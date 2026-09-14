@@ -177,8 +177,7 @@ model Review {
 
 model Event {
   id              Int                @id @default(autoincrement())
-  title           String
-  description     String             @default("")
+  title           String             @unique
   date            DateTime           @default(now())
   location        String
   maxParticipants Int
