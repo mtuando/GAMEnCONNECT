@@ -29,7 +29,7 @@ const AdminReportsPage = () => {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
   useEffect(() => {
-    let ignore = false;
+    let ignore : boolean = false;
 
     async function loadReports() {
       try {

@@ -53,5 +53,16 @@ export default async function AdminManagePage() {
     },
   });
 
-  return <ManageClient games={games} servers={servers} players={players}/>;
+  const events = await prisma.event.findMany({
+    orderBy: {
+      date: 'desc',
+    },
+    include: {
+      _count: {
+        select: { participants: true },
+      },
+    },
+  });
+
+  return <ManageClient games={games} servers={servers} players={players} events={events}/>;
 }

@@ -20,6 +20,13 @@ type CommunityServerJson = {
   featured?: boolean;
 };
 
+type EventsJson = {
+  title: string;
+  location: string;
+  date: string;
+  maxParticipants: number;
+};
+
 const isAdmin = async () => {
   const session = await auth();
 
@@ -66,6 +73,26 @@ const validateCommunityServers = (
   );
 };
 
+const validateEvents = (events: unknown): events is EventsJson[] => {
+  if (!Array.isArray(events)) {
+    return false;
+  }
+
+  return events.every(
+    (event) =>
+      typeof event === 'object' &&
+      event !== null &&
+      'title' in event &&
+      'location' in event &&
+      'date' in event &&
+      'maxParticipants' in event &&
+      typeof event.title === 'string' &&
+      typeof event.location === 'string' &&
+      typeof event.date === 'string' &&
+      typeof event.maxParticipants === 'number',
+  );
+};
+
 export async function POST(request: Request) {
   const admin = await isAdmin();
 
@@ -78,7 +105,7 @@ export async function POST(request: Request) {
 
     const games = body.games ?? [];
     const communityServers = body.communityServers ?? [];
-
+    const events = body.events ?? [];
     if (!validateGames(games)) {
       return NextResponse.json(
         {
@@ -94,6 +121,16 @@ export async function POST(request: Request) {
         {
           error:
             'Invalid community servers JSON. Servers must be an array with name, description, inviteUrl, and tags.',
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!validateEvents(events)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid events JSON. Events must be an array with title, location, date, and maxParticipants.',
         },
         { status: 400 },
       );
@@ -144,6 +181,27 @@ export async function POST(request: Request) {
             tags: server.tags,
             imageUrl: server.imageUrl ?? '',
             featured: server.featured ?? false,
+          },
+        }),
+      ),
+    );
+
+    await Promise.all(
+      events.map((event) =>
+        prisma.event.upsert({
+          where: {
+            title: event.title,
+          },
+          update: {
+            location: event.location,
+            date: new Date(event.date),
+            maxParticipants: event.maxParticipants,
+          },
+          create: {
+            title: event.title,
+            location: event.location,
+            date: new Date(event.date),
+            maxParticipants: event.maxParticipants,
           },
         }),
       ),

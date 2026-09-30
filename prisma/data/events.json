@@ -1,42 +1,36 @@
 [
   {
     "title": "Valorant Tournament",
-    "description": "Join us for an exciting Valorant tournament! Compete against other players and showcase your skills.",
     "date": "2024-07-15T18:00:00Z",
     "location": "UH GameLink Arena",
     "maxParticipants": 16
   },
   {
     "title": "Minecraft Build-Off",
-    "description": "Show off your creativity in our Minecraft Build-Off event. Build the most impressive structure and win prizes!",
     "date": "2024-08-01T15:00:00Z",
     "location": "UH GameLink Minecraft Server",
     "maxParticipants": 20
   },
   {
     "title": "League of Legends Showdown",
-    "description": "Form a team and compete in our League of Legends Showdown. Battle it out for glory and rewards.",
     "date": "2024-09-10T19:00:00Z",
     "location": "UH GameLink eSports Arena",
     "maxParticipants": 10
   },
   {
     "title": "Fortnite Battle Royale",
-    "description": "Join our Fortnite Battle Royale event and fight to be the last one standing. Exciting prizes await the winner!",
     "date": "2024-10-05T17:00:00Z",
     "location": "UH GameLink Fortnite Server",
     "maxParticipants": 100
   },
   {
     "title": "Overwatch 2 Tournament",
-    "description": "Compete in our Overwatch 2 Tournament and prove your skills in this fast-paced team shooter.",
     "date": "2024-11-20T16:00:00Z",
     "location": "UH GameLink eSports Arena",
     "maxParticipants": 12
   },
   {
     "title": "Call of Duty: Warzone Showdown",
-    "description": "Join our Call of Duty: Warzone Showdown and battle it out in this action-packed event.",
     "date": "2024-12-15T18:00:00Z",
     "location": "UH GameLink Warzone Server",
     "maxParticipants": 20

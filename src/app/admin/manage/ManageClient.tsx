@@ -17,10 +17,12 @@ import {
 import GameForm from './GameForm';
 import ServerForm from './ServerForm';
 import PlayersForm from './PlayersForm';
+import EventForm from './EventForm';
 import {
   deleteGameAction,
   deleteServerAction,
   deletePlayerAction,
+  deleteEventAction,
   banPlayerAction,
   unbanPlayerAction,
   flagPlayerAction,
@@ -61,13 +63,25 @@ type Player = {
   moderationStatus: 'CLEAN' | 'FLAGGED' | 'BANNED';
 };
 
+export type Event = {
+  id: number;
+  title: string;
+  location: string;
+  date: Date;
+  maxParticipants: number;
+  _count: {
+    participants: number;
+  };
+};
+
 type ManageClientProps = {
   games: Game[];
   servers: CommunityServer[];
   players: Player[];
+  events: Event[];
 };
 
-type ManageTab = 'games' | 'servers' | 'players';
+type ManageTab = 'games' | 'servers' | 'players' | 'events';
 type FormMode =
   | 'none'
   | 'add-game'
@@ -76,14 +90,18 @@ type FormMode =
   | 'edit-server'
   | 'add-player'
   | 'edit-player'
-  | 'delete-player';
+  | 'delete-player'
+  | 'add-event'
+  | 'edit-event'
+  | 'delete-event';
 
-type JsonTarget = 'games' | 'servers' | null;
+type JsonTarget = 'games' | 'servers' | 'events' | null;
 
 export default function ManageClient({
   games,
   servers,
   players,
+  events,
 }: ManageClientProps) {
   const router = useRouter();
 
@@ -92,7 +110,7 @@ export default function ManageClient({
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [selectedServer, setSelectedServer] = useState<CommunityServer | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [jsonTarget, setJsonTarget] = useState<JsonTarget>(null);
   const [jsonText, setJsonText] = useState('');
   const [jsonMessage, setJsonMessage] = useState('');
@@ -116,7 +134,7 @@ export default function ManageClient({
   const showGames = activeTab === 'games';
   const showServers = activeTab === 'servers';
   const showPlayers = activeTab === 'players';
-
+  const showEvents = activeTab === 'events';
   const getGamesJson = () =>
     games.map((game) => ({
       title: game.title,
@@ -137,6 +155,15 @@ export default function ManageClient({
       featured: server.featured,
     }));
 
+  const getEventsJson = () =>
+    events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      location: event.location,
+      date: event.date,
+      maxParticipants: event.maxParticipants,
+    }));
+
   const openJsonEditor = (target: Exclude<JsonTarget, null>) => {
     closeForm();
     setJsonTarget(target);
@@ -145,6 +172,8 @@ export default function ManageClient({
 
     if (target === 'games') {
       setJsonText(JSON.stringify(getGamesJson(), null, 2));
+    } else if (target === 'events') {
+      setJsonText(JSON.stringify(getEventsJson(), null, 2));
     } else {
       setJsonText(JSON.stringify(getServersJson(), null, 2));
     }
@@ -163,6 +192,7 @@ export default function ManageClient({
     setSelectedGame(null);
     setSelectedServer(null);
     setSelectedPlayer(null);
+    setSelectedEvent(null);
   };
 
   const switchToGames = () => {
@@ -177,6 +207,11 @@ export default function ManageClient({
 
   const switchToPlayers = () => {
     setActiveTab('players');
+    closeForm();
+  };
+
+  const switchToEvents = () => {
+    setActiveTab('events');
     closeForm();
   };
 
@@ -204,6 +239,7 @@ export default function ManageClient({
           games: jsonTarget === 'games' ? parsedJson : getGamesJson(),
           communityServers:
             jsonTarget === 'servers' ? parsedJson : getServersJson(),
+          events: jsonTarget === 'events' ? parsedJson : getEventsJson(),
         }),
       });
 
@@ -214,11 +250,14 @@ export default function ManageClient({
         return;
       }
 
-      setJsonMessage(
+      const count =
         jsonTarget === 'games'
-          ? `Saved ${data.gamesImported} games.`
-          : `Saved ${data.communityServersImported} community servers.`,
-      );
+          ? data.gamesImported
+          : jsonTarget === 'servers'
+            ? data.communityServersImported
+            : (data.eventsImported ?? data.count ?? data.events?.length);
+
+      setJsonMessage(`Saved ${count ?? 0} events.`);
 
       router.refresh();
     } catch {
@@ -264,6 +303,14 @@ export default function ManageClient({
             onClick={switchToPlayers}
           >
             Manage Players
+          </Button>
+
+          <Button
+            variant={showEvents ? 'primary' : 'outline-primary'}
+            style={!showEvents ? { backgroundColor: 'transparent' } : {}}
+            onClick={switchToEvents}
+          >
+            Manage Events
           </Button>
         </ButtonGroup>
       </Stack>
@@ -696,6 +743,16 @@ export default function ManageClient({
             />
           )}
 
+          {(formMode === 'add-event' || formMode === 'edit-event') && (
+            <EventForm
+              show
+              mode={formMode === 'add-event' ? 'add' : 'edit'}
+              event={selectedEvent ?? undefined}
+              onCancelAction={closeForm}
+              onSavedAction={closeForm}
+            />
+          )}
+
           {formMode === 'delete-player' && (
             <Modal show onHide={closeForm} centered size="lg">
               <Modal.Header closeButton className="json-modal-header">
@@ -772,13 +829,123 @@ export default function ManageClient({
           )}
         </>
       )}
+      
+      {showEvents && (
+        <>
+          <Card className="custom-card-body mb-4">
+            <Card.Header className="d-flex justify-content-between align-items-center">
+              <div>
+                <strong>Events</strong>
+                <span className="text-muted ms-2">({events.length})</span>
+              </div>
+              <Stack direction="horizontal" gap={2}>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => openJsonEditor('events')}
+                >
+                  Edit Events JSON
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedEvent(null);
+                    setFormMode('add-event');
+                  }}
+                >
+                  + Add Event
+                </Button>
+              </Stack>
+            </Card.Header>
+            <Card.Body>
+              <Table responsive bordered hover className="align-middle">
+                <thead>
+                  <tr>
+                    <th style={{ width: '70px' }}>ID</th>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Max Participants</th>
+                    <th style={actionsColumnStyle}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events.map((event) => (
+                    <tr key={event.id}>
+                      <td>{event.id}</td>
+                      <td>{event.title}</td>
+                      <td>{new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC' })}</td>
+                      <td>{event.location}</td>
+                      <td>{event.maxParticipants}</td>
+                      <td style={actionsColumnStyle}>
+                        <Stack direction="horizontal" gap={2}>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline-primary"
+                            onClick={() => {
+                              setSelectedEvent(event);
+                              setFormMode('edit-event');
+                            }}
+                          >
+                            Edit
+                          </Button>
+                          <form
+                            action={deleteEventAction}
+                            onSubmit={(e) => {
+                              if (
+                                !window.confirm(
+                                  `Delete ${event.title}? This cannot be undone.`,
+                                )
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            <input type="hidden" name="id" value={event.id} />
+                            <Button
+                              size="sm"
+                              variant="outline-danger"
+                              type="submit"
+                            >
+                              Delete
+                            </Button>
+                          </form>
+                        </Stack>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              {events.length === 0 && (
+                <p className="text-muted mb-0">No events found.</p>
+              )}
+            </Card.Body>
+          </Card>
+          
+          {(formMode === 'add-event' || formMode === 'edit-event') && (
+            <EventForm
+              show
+              mode={formMode === 'add-event' ? 'add' : 'edit'}
+              event={selectedEvent ?? undefined}
+              onCancelAction={closeForm}
+              onSavedAction={closeForm}
+            />
+          )}
+        </>
+      )}
+      
 
       <Modal show={jsonTarget !== null} onHide={closeJsonEditor} centered size="xl">
         <Modal.Header closeButton className="json-modal-header">
           <Modal.Title>
             {jsonTarget === 'games'
-              ? 'Edit Games JSON'
-              : 'Edit Community Servers JSON'}
+                  ? 'Edit Games JSON'
+                  : jsonTarget === 'events'
+                  ? 'Edit Events JSON'
+                  : 'Edit Community Servers JSON'}
           </Modal.Title>
         </Modal.Header>
 
@@ -794,7 +961,11 @@ export default function ManageClient({
           <Form id="json-edit-form" onSubmit={handleSaveJson}>
             <Form.Group>
               <Form.Label>
-                {jsonTarget === 'games' ? 'Games JSON' : 'Community Servers JSON'}
+                {jsonTarget === 'games'
+                  ? 'Games JSON'
+                  : jsonTarget === 'events'
+                  ? 'Events JSON'
+                  : 'Community Servers JSON'}
               </Form.Label>
 
               <Form.Control

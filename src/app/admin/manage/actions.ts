@@ -146,6 +146,46 @@ export async function deleteServerAction(formData: FormData) {
   revalidatePath('/admin/manage');
 }
 
+export async function createEventAction(formData: FormData) {
+  await prisma.event.create({
+    data: {
+      title: getRequiredString(formData, 'title'),
+      location: getRequiredString(formData, 'location'),
+      date: new Date(getRequiredString(formData, 'date')),
+      maxParticipants: parseInt(getRequiredString(formData, 'max-participants')),
+    },
+  });
+
+}
+
+export async function updateEventAction(formData: FormData) {
+  const id = getId(formData);
+
+  await prisma.event.update({
+    where: {
+      id,
+    },
+    data: {
+      title: getRequiredString(formData, 'title'),
+      location: getRequiredString(formData, 'location'),
+      date: new Date(getRequiredString(formData, 'date')),
+      maxParticipants: parseInt(getRequiredString(formData, 'max-participants')),
+    },
+  });
+
+  revalidatePath('/admin/manage');
+}
+
+export async function deleteEventAction(formData: FormData) {
+  const id = getId(formData);
+
+  await prisma.event.delete({
+    where: { id },
+  });
+
+  revalidatePath('/admin/manage');
+}
+
 export async function createPlayerAction(formData: FormData) {
   {/* Convert ID to number from string */}
   const rawUserId = formData.get('userId');

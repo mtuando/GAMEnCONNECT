@@ -40,7 +40,7 @@ export default function AddServerPage() {
         return;
       }
 
-      router.push('/community');
+      router.push('/community?page=1&limit=10');
     } catch {
       setError('Something went wrong');
     }
