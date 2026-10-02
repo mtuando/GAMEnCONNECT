@@ -3,6 +3,11 @@
    Black / Green / White palette
    ============================= */
 
+* {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 :root {
   --color-bg: #070a08;
   --color-surface: #0f1511;
@@ -17,6 +22,8 @@
 body {
   display: flex;
   flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom)
 }
 
 html,
