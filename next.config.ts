@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.public.blob.vercel-storage.com',  // Wildcard for any subdomain
-        pathname: '/**',  // This ensures any path is included
+        hostname: '**.public.blob.vercel-storage.com',  // Will change to Cloudflare soon.
+        pathname: '/**', 
       },
     ],
     unoptimized: true,
