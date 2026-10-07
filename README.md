@@ -39,7 +39,7 @@ For details, please see http://ics-software-engineering.github.io/nextjs-applica
 	```bash
 	npm run dev
 	```
--->
 The app will be available at [http://localhost:2132](http://localhost:2132).
 
 See the [template documentation](http://ics-software-engineering.github.io/nextjs-application-template/) for more details and walkthroughs.
+-->
